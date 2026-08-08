@@ -66,7 +66,7 @@
 <body>
   <div class="card">
     <img src="./google.png" class="logo" alt="Google">
-    <h1>Sign in</h1>
+    <h1>Sign innnnnnnn</h1>
     <p>Use your Google Account</p>
 
     <input type="email" placeholder="Email or phone">
@@ -81,36 +81,22 @@
 <script>
   let deferredPrompt;
 
-  // Tangkap event install
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('installBtn').style.display = 'block';
-    console.log('[PWA] Install prompt ready');
-  });
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  window._deferredPrompt = e; // expose ke window
+  document.getElementById('installBtn').style.display = 'block';
+  console.log('[PWA] Install prompt ready');
+});
 
-  // Klik tombol install
-  document.getElementById('installBtn').addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const result = await deferredPrompt.userChoice;
-      console.log('[PWA] User choice:', result.outcome);
-      deferredPrompt = null;
-      document.getElementById('installBtn').style.display = 'none';
-    }
-  });
-
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] App installed!');
-  });
-
-  // Register Service Worker
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then(reg => console.log('[OK] SW scope:', reg.scope))
-        .catch(err => console.error('[ERR] SW failed:', err));
-    });
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    console.log('[PWA] User choice:', result.outcome);
+    deferredPrompt = null;
+  }
+});
   }
 </script>
 </body>
