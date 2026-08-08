@@ -1,19 +1,35 @@
 {
   "name": "Google Accounts",
   "short_name": "Google",
+  "id": "/webapp.html",
   "start_url": "./webapp.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://www.google.com/favicon.ico",
+      "src": "https://www.gstatic.com/images/branding/googleg/2x/googleg_standard_color_128dp.png",
       "sizes": "192x192",
-      "type": "image/x-icon"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://ssl.gstatic.com/images/branding/product/2x/googleg_48dp.png",
+      "src": "https://www.gstatic.com/images/branding/googleg/2x/googleg_standard_color_128dp.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://www.gstatic.com/images/branding/googleg/2x/googleg_standard_color_128dp.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://www.gstatic.com/images/branding/googleg/2x/googleg_standard_color_128dp.png",
+      "sizes": "720x1280",
       "type": "image/png"
     }
   ]
