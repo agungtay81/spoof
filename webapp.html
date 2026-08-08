@@ -79,24 +79,44 @@
   </div>
 
 <script>
-  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    console.log('[PWA] Install prompt ready', e);
+    console.log('[PWA] Type:', typeof e.prompt);
+    
+    // Simpan event
+    window._pwaPrompt = e;
+    
+    // Tampilkan tombol
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'block';
+  });
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  window._deferredPrompt = e; // expose ke window
-  document.getElementById('installBtn').style.display = 'block';
-  console.log('[PWA] Install prompt ready');
-});
+  // Tombol install
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('installBtn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const prompt = window._pwaPrompt;
+        console.log('[PWA] Prompt object:', prompt);
+        if (prompt && typeof prompt.prompt === 'function') {
+          prompt.prompt();
+        } else {
+          console.error('[PWA] prompt() not available');
+          // Fallback - coba cara lain
+          window.location.href = window.location.href;
+        }
+      });
+    }
+  });
 
-document.getElementById('installBtn').addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const result = await deferredPrompt.userChoice;
-    console.log('[PWA] User choice:', result.outcome);
-    deferredPrompt = null;
-  }
-});
+  // Register SW
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('[OK] SW:', reg.scope))
+        .catch(err => console.error('[ERR] SW:', err));
+    });
   }
 </script>
 </body>
