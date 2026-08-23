@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+const blob = new Blob(
+  ["<h1>Malicious Content</h1>"], 
+  { type: "text/html" }
+);
+const url = URL.createObjectURL(blob);
+
+// Pakai location bukan window.open
+// Supaya tidak diblokir popup blocker iOS
+location = url;
+</script>
+</body>
+</html>
