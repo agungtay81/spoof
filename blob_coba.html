@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+const blob = new Blob(["<h1>Malicious</h1>"], {type:"text/html"});
+const url = URL.createObjectURL(blob);
+location.assign(url);
+</script>
+</body>
+</html>
