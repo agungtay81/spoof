@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blob URL Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    h1 { font-size: 20px; margin-bottom: 20px; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      background: #3b82f6;
+    }
+    .btn:active { opacity: 0.8; }
+    .auto { background: #ef4444; }
+    .result {
+      margin-top: 20px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      font-size: 13px;
+      border: 1px solid #ddd;
+    }
+    .ok { color: green; }
+    .fail { color: red; }
+  </style>
+</head>
+<body>
+
+<h1>🔬 Blob URL Method Tester</h1>
+<p style="font-size:13px;color:#666;margin-bottom:16px;">
+  Test semua metode membuka blob URL di iOS Safari
+</p>
+
+<div id="log" class="result">Klik tombol untuk test...</div>
+
+<!-- AUTO METHODS -->
+<h3 style="margin:16px 0 8px;">🤖 Auto (Tanpa Klik):</h3>
+
+<button class="btn auto" onclick="testLocationReplace()">
+  1. location.replace()
+</button>
+<button class="btn auto" onclick="testLocationAssign()">
+  2. location.assign()
+</button>
+<button class="btn auto" onclick="testLocationHref()">
+  3. location.href =
+</button>
+<button class="btn auto" onclick="testDocumentLocation()">
+  4. document.location =
+</button>
+<button class="btn auto" onclick="testLocationDirect()">
+  5. location = url (direct)
+</button>
+<button class="btn auto" onclick="testMetaRefresh()">
+  6. meta http-equiv refresh
+</button>
+
+<!-- MANUAL METHODS -->
+<h3 style="margin:16px 0 8px;">👆 Manual (Butuh Klik):</h3>
+
+<button class="btn" onclick="testWindowOpen()">
+  7. window.open()
+</button>
+<button class="btn" onclick="testAnchorClick()">
+  8. anchor.click()
+</button>
+<button class="btn" onclick="testIframe()">
+  9. iframe.src (fullscreen)
+</button>
+<button class="btn" onclick="testAnchorTarget()">
+  10. anchor target=_blank
+</button>
+<button class="btn" onclick="testWindowOpenSelf()">
+  11. window.open(_self)
+</button>
+<button class="btn" onclick="testFormSubmit()">
+  12. form submit to blob
+</button>
+
+<!-- AUTO RUN ALL -->
+<h3 style="margin:16px 0 8px;">⚡ Auto Run:</h3>
+<button class="btn" style="background:#8b5cf6;" onclick="autoRunAll()">
+  🚀 Run All Auto Methods
+</button>
+
+<script>
+  const content = '<h1 style="color:red;text-align:center;margin-top:40vh;">✅ BLOB OPENED!<br><small style="font-size:16px;color:#333;">Method worked!</small></h1>';
+  const log = document.getElementById('log');
+
+  function createBlob() {
+    return new Blob([content], { type: "text/html" });
+  }
+
+  function createUrl() {
+    return URL.createObjectURL(createBlob());
+  }
+
+  function addLog(method, status, note = '') {
+    const color = status === 'OK' ? 'green' : 'red';
+    const emoji = status === 'OK' ? '✅' : '❌';
+    log.innerHTML += `<div style="color:${color};margin:4px 0;">
+      ${emoji} <b>${method}</b> ${note}
+    </div>`;
+  }
+
+  // 1. location.replace()
+  function testLocationReplace() {
+    try {
+      const url = createUrl();
+      addLog('location.replace()', 'OK', '→ navigating...');
+      location.replace(url);
+    } catch(e) {
+      addLog('location.replace()', 'FAIL', e.message);
+    }
+  }
+
+  // 2. location.assign()
+  function testLocationAssign() {
+    try {
+      const url = createUrl();
+      addLog('location.assign()', 'OK', '→ navigating...');
+      location.assign(url);
+    } catch(e) {
+      addLog('location.assign()', 'FAIL', e.message);
+    }
+  }
+
+  // 3. location.href
+  function testLocationHref() {
+    try {
+      const url = createUrl();
+      addLog('location.href =', 'OK', '→ navigating...');
+      location.href = url;
+    } catch(e) {
+      addLog('location.href =', 'FAIL', e.message);
+    }
+  }
+
+  // 4. document.location
+  function testDocumentLocation() {
+    try {
+      const url = createUrl();
+      addLog('document.location =', 'OK', '→ navigating...');
+      document.location = url;
+    } catch(e) {
+      addLog('document.location =', 'FAIL', e.message);
+    }
+  }
+
+  // 5. location = url (direct)
+  function testLocationDirect() {
+    try {
+      const url = createUrl();
+      addLog('location = url', 'OK', '→ navigating...');
+      location = url;
+    } catch(e) {
+      addLog('location = url', 'FAIL', e.message);
+    }
+  }
+
+  // 6. meta refresh
+  function testMetaRefresh() {
+    try {
+      const url = createUrl();
+      const meta = document.createElement('meta');
+      meta.httpEquiv = 'refresh';
+      meta.content = `0;url=${url}`;
+      document.head.appendChild(meta);
+      addLog('meta refresh', 'OK', '→ navigating...');
+    } catch(e) {
+      addLog('meta refresh', 'FAIL', e.message);
+    }
+  }
+
+  // 7. window.open()
+  function testWindowOpen() {
+    try {
+      const url = createUrl();
+      const w = window.open(url, '_blank');
+      if (w) {
+        addLog('window.open()', 'OK', '→ new tab opened');
+      } else {
+        addLog('window.open()', 'FAIL', 'blocked by popup blocker');
+      }
+    } catch(e) {
+      addLog('window.open()', 'FAIL', e.message);
+    }
+  }
+
+  // 8. anchor.click()
+  function testAnchorClick() {
+    try {
+      const url = createUrl();
+      const a = document.createElement('a');
+      a.href = url;
+      a.click();
+      addLog('anchor.click()', 'OK', '→ navigating...');
+    } catch(e) {
+      addLog('anchor.click()', 'FAIL', e.message);
+    }
+  }
+
+  // 9. iframe fullscreen
+  function testIframe() {
+    try {
+      const url = createUrl();
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:white;';
+      document.body.appendChild(iframe);
+      addLog('iframe.src', 'OK', '→ fullscreen iframe added');
+    } catch(e) {
+      addLog('iframe.src', 'FAIL', e.message);
+    }
+  }
+
+  // 10. anchor target=_blank
+  function testAnchorTarget() {
+    try {
+      const url = createUrl();
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      addLog('anchor target=_blank', 'OK', '→ new tab');
+    } catch(e) {
+      addLog('anchor target=_blank', 'FAIL', e.message);
+    }
+  }
+
+  // 11. window.open(_self)
+  function testWindowOpenSelf() {
+    try {
+      const url = createUrl();
+      window.open(url, '_self');
+      addLog('window.open(_self)', 'OK', '→ navigating...');
+    } catch(e) {
+      addLog('window.open(_self)', 'FAIL', e.message);
+    }
+  }
+
+  // 12. form submit
+  function testFormSubmit() {
+    try {
+      const url = createUrl();
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = url;
+      document.body.appendChild(form);
+      form.submit();
+      addLog('form.submit()', 'OK', '→ submitting...');
+    } catch(e) {
+      addLog('form.submit()', 'FAIL', e.message);
+    }
+  }
+
+  // Auto run all
+  function autoRunAll() {
+    log.innerHTML = '<b>Running all auto methods...</b><br>';
+    const methods = [
+      testLocationReplace,
+      testLocationAssign,
+      testLocationHref,
+      testDocumentLocation,
+      testLocationDirect,
+      testMetaRefresh
+    ];
+    
+    let i = 0;
+    const run = () => {
+      if (i < methods.length) {
+        try { methods[i](); } catch(e) {}
+        i++;
+        // Kalau belum navigate, coba method berikutnya
+        setTimeout(run, 500);
+      }
+    };
+    run();
+  }
+</script>
+
+</body>
+</html>
