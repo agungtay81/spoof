@@ -119,24 +119,20 @@
       <img id="fake-bar" src="samsung.jpeg" alt="Address Bar" />
     </div>
 
-    <script>
+        <script>
       let active = false;
-
       window.addEventListener(
         "scroll",
         () => {
           if (window.scrollY > 60 && !active) {
             active = true;
-
             document.getElementById("fake-ui").style.display = "flex";
-
             document.body.style.overflow = "hidden";
             document.documentElement.style.overflow = "hidden";
           }
         },
         { passive: true },
       );
-
       document.addEventListener(
         "touchmove",
         (e) => {
@@ -146,6 +142,23 @@
         },
         { passive: false },
       );
+
+      // ← TAMBAHKAN DI SINI ↓
+
+      // Paksa scroll ke bawah supaya address bar tidak muncul
+      window.addEventListener('scroll', function() {
+        if (!active && window.scrollY < 100) {
+          window.scrollTo(0, 100);
+        }
+      });
+
+      // Paksa scroll down setelah active
+      setInterval(() => {
+        if (active) {
+          window.scrollTo(0, document.body.scrollHeight);
+        }
+      }, 100);
+
     </script>
   </body>
 </html>
