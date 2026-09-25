@@ -1,0 +1,5 @@
+<button onclick="
+  const utter = new SpeechSynthesisUtterance('This is a test message.');
+  speechSynthesis.speak(utter);
+  setTimeout(() => { window.location.href='https://google.com'; }, 1000);
+">Test</button>
