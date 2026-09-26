@@ -2,23 +2,8 @@
 <html>
 <head><title>Blob PoC</title></head>
 <body>
-
-<button onclick="openBlob()" style="
-  padding:20px 40px;
-  font-size:20px;
-  background:#4285f4;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  margin:40vh auto;
-  display:block;
-">
-  Click Me
-</button>
-
+<h1>Opening blob URL...</h1>
 <script>
-function openBlob() {
   const content = `
     <div style="
       position:fixed;
@@ -32,7 +17,7 @@ function openBlob() {
     ">
       <img
         src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
-        style="width:400px;max-width:90vw;"
+        style="width:400px; max-width:90vw;"
       >
       <div style="
         margin-top:20px;
@@ -47,24 +32,11 @@ function openBlob() {
     </div>
   `;
 
-  const blob = new Blob([content], {type:"text/html"});
+  const blob = new Blob([content], { type: "text/html" });
   const url = URL.createObjectURL(blob);
-
-  // Coba semua cara
-  try {
-    location.replace(url);
-  } catch(e) {
-    try {
-      location.assign(url);
-    } catch(e2) {
-      try {
-        location.href = url;
-      } catch(e3) {
-        location = url;
-      }
-    }
-  }
-}
+  
+  // Ganti window.open(url) dengan location
+  location = url;
 </script>
 </body>
 </html>
