@@ -2,14 +2,19 @@
 <html>
 <head><title>Blob PoC</title></head>
 <body>
-<h1>Opening blob URL...</h1>
+<h1 id="status">Generating blob URL...</h1>
+<a id="link" href="#" target="_blank">Open Blob URL</a>
+
 <script>
-  // Test 1 - Konten sangat simple
   const content = '<h1 style="color:red;">BLOB TEST</h1>';
-  
-  const blob = new Blob([content], { type: "text/html" });
+  const blob = new Blob([content], {type:"text/html"});
   const url = URL.createObjectURL(blob);
-  window.open(url);
+  
+  // Tampilkan URL di halaman
+  document.getElementById('status').textContent = url;
+  document.getElementById('link').href = url;
+  document.getElementById('link').textContent = 
+    'Click here: ' + url;
 </script>
 </body>
 </html>
