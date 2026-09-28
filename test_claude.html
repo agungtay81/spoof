@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"><title>UXSS boundary probe</title></head>
+  <body>
+  <h3>WebView origin/context probe</h3>
+  <iframe id="f" sandbox="allow-scripts" src="about:blank"></iframe>
+  <pre id="out"></pre>
+  <script>
+    // Harmless marker payload — NO credentials, NO exfiltration.
+    const MARKER = "UXSS PoC: JavaScript executed in host WebView context.";
+
+    // Deferred execution: queue now, run after current navigation settles.
+    setTimeout(function () {
+      try {
+        const ctx = {
+          marker: MARKER,
+          location: String(location.href),
+          origin: String(location.origin),
+          // Existence checks only — we read no values:
+          hasOpener: (window.opener !== null),
+          topEqualsSelf: (window.top === window.self),
+          bridgeNamesPresent: Object.getOwnPropertyNames(window)
+            .filter(n => /bridge|native|android|webkit|wallet/i.test(n))
+        };
+        // Evidence sink is on-screen only — nothing leaves the device.
+        document.getElementById("out").textContent = JSON.stringify(ctx, null, 2);
+      } catch (e) {
+        document.getElementById("out").textContent = "blocked: " + e.message;
+      }
+    }, 1500);
+  </script>
+  </body>
+  </html>
