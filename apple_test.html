@@ -1,10 +1,10 @@
 <!DOCTYPE html><html><body>
-<h1>URL display-divergence probe</h1>
+<h1>Elision probe</h1>
 <pre id="o"></pre>
 <script>
-  document.getElementById('o').textContent =
-    'location.href   = ' + location.href + '\n' +
-    'location.origin = ' + location.origin + '\n' +
-    'document.domain = ' + document.domain;
+document.getElementById('o').textContent =
+  'href   = ' + location.href + '\n' +
+  'origin = ' + location.origin + '\n' +
+  'host   = ' + location.hostname;
 </script>
 </body></html>
