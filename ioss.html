@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><body>
+<button onclick="recon()">RECON iOS</button>
+<pre id="log"></pre>
+<script>
+function log(m){ document.getElementById('log').textContent += m + '\n'; }
+function recon(){
+  document.getElementById('log').textContent='';
+
+  // 1. Dependensi stage-2 (persistence)
+  log('serviceWorker in navigator : ' + ('serviceWorker' in navigator));
+  log('typeof caches              : ' + (typeof caches));
+  log('CacheStorage usable        : ' + (typeof caches!=='undefined' && typeof caches.open==='function'));
+
+  // 2. Bridge gaya iOS (WKWebView message handlers)
+  try {
+    var mh = (window.webkit && window.webkit.messageHandlers) || {};
+    log('webkit.messageHandlers keys: [' + Object.keys(mh).join(', ') + ']');
+    var cand=['sapphireWebViewBridge','SapphireWebViewBridge','sapphire','edgeBridge','MSNBridge','nativeBridge','bridge'];
+    var present=[]; for(var i=0;i<cand.length;i++){try{if(mh[cand[i]])present.push('mh.'+cand[i]);}catch(e){}}
+    log('mh candidates present: ' + (present.join(', ')||'(none)'));
+  } catch(e){ log('mh enum err: '+e); }
+
+  // 3. Global suntikan (sapphire/edge/msn/bridge/native)
+  var susp=[]; try {
+    Object.getOwnPropertyNames(window).forEach(function(n){
+      if(/sapphire|edge|msn|bridge|native|webview|__mb|MBApp/i.test(n)) susp.push(n);
+    });
+  } catch(e){ log('win enum err: '+e); }
+  log('suspicious globals: ' + (susp.join(', ')||'(none)'));
+
+  // 4. Inspeksi sapphireWebViewBridge bila ada
+  try {
+    var b=window.sapphireWebViewBridge;
+    if(b){
+      log('--- sapphireWebViewBridge ('+typeof b+') ---');
+      log('keys: ' + Object.keys(b).join(', '));
+      log('.send: '+typeof b.send+'  .$onDataReady: '+typeof b.$onDataReady);
+    } else log('window.sapphireWebViewBridge: absent');
+  } catch(e){ log('bridge inspect err: '+e); }
+
+  try { alert('SW:'+('serviceWorker' in navigator)+'  caches:'+(typeof caches)+
+              '\nbridge:'+(typeof window.sapphireWebViewBridge)+
+              '\nmh:'+Object.keys((window.webkit&&window.webkit.messageHandlers)||{}).join(',')); } catch(e){}
+}
+</script>
+</body></html>
